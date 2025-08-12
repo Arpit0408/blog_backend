@@ -1,0 +1,71 @@
+// routes/blogRoutes.js
+const express = require('express');
+const Blog = require('../models/Blog');
+const upload = require('../middleware/upload'); // For image upload
+const router = express.Router();
+
+// @route   GET /api/blogs
+// @desc    Get all blog posts
+router.get('/', async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.status(200).json(blogs);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error while fetching blogs.' });
+  }
+});
+
+// @route   GET /api/blogs/:id
+// @desc    Get a single blog post by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    res.status(200).json(blog);
+  } catch (err) {
+    res.status(400).json({ message: 'Invalid blog ID' });
+  }
+});
+
+// @route   POST /api/blogs
+// @desc    Create a new blog post (with optional image upload)
+router.post('/', upload.single('image'), async (req, res) => {
+  const { title, body, author } = req.body;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : '';
+
+  try {
+    if (!title || !body) {
+      return res.status(400).json({ message: 'Title and body are required.' });
+    }
+
+    const newBlog = new Blog({
+      title,
+      body,
+      author: author || 'Anonymous',
+      image: imagePath
+    });
+
+    const savedBlog = await newBlog.save();
+    res.status(201).json(savedBlog);
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating blog', error: err.message });
+  }
+});
+
+// @route   DELETE /api/blogs/:id
+// @desc    Delete a blog post
+router.delete('/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    res.status(200).json({ message: 'Blog deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ message: 'Invalid blog ID' });
+  }
+});
+
+module.exports = router;
