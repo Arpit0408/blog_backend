@@ -33,16 +33,22 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/blogs
 // @desc    Create a new blog post (with optional image upload)
 router.post('/', upload.single('image'), async (req, res) => {
-  const { title, body, author } = req.body;
+  const { title, slug, body, author } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : '';
 
-  try {
-    if (!title || !body) {
-      return res.status(400).json({ message: 'Title and body are required.' });
-    }
+  if (!title || !slug || !body) {
+    return res.status(400).json({ message: 'Title, slug, and body are required.' });
+  }
 
+  // Validate slug format server-side (lowercase letters, numbers, hyphens, underscores)
+  if (!/^[a-z0-9-_]+$/.test(slug)) {
+    return res.status(400).json({ message: 'Slug can only contain lowercase letters, numbers, hyphens, and underscores.' });
+  }
+
+  try {
     const newBlog = new Blog({
       title,
+      slug,
       body,
       author: author || 'Anonymous',
       image: imagePath
@@ -52,6 +58,9 @@ router.post('/', upload.single('image'), async (req, res) => {
     res.status(201).json(savedBlog);
   } catch (err) {
     console.error('Error creating blog:', err);
+    if (err.code === 11000 && err.keyPattern?.slug) {
+      return res.status(400).json({ message: 'Slug must be unique. This slug already exists.' });
+    }
     res.status(500).json({ message: 'Error creating blog', error: err.message });
   }
 });
@@ -59,8 +68,12 @@ router.post('/', upload.single('image'), async (req, res) => {
 // @route   PUT /api/blogs/:id
 // @desc    Update a blog post (with optional image upload)
 router.put('/:id', upload.single('image'), async (req, res) => {
-  const { title, body, author } = req.body;
+  const { title, slug, body, author } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+  if (slug && !/^[a-z0-9-_]+$/.test(slug)) {
+    return res.status(400).json({ message: 'Slug can only contain lowercase letters, numbers, hyphens, and underscores.' });
+  }
 
   try {
     const blog = await Blog.findById(req.params.id);
@@ -69,6 +82,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
     }
 
     if (title) blog.title = title;
+    if (slug) blog.slug = slug;
     if (body) blog.body = body;
     if (author) blog.author = author;
     if (imagePath) blog.image = imagePath;
@@ -77,6 +91,9 @@ router.put('/:id', upload.single('image'), async (req, res) => {
     res.status(200).json(updatedBlog);
   } catch (err) {
     console.error('Error updating blog:', err);
+    if (err.code === 11000 && err.keyPattern?.slug) {
+      return res.status(400).json({ message: 'Slug must be unique. This slug already exists.' });
+    }
     res.status(500).json({ message: 'Error updating blog', error: err.message });
   }
 });
