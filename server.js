@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const blogRoutes = require('./routes/blogRoutes');
+const path = require('path'); // ✅ this is the missing line
 
 dotenv.config();
 
