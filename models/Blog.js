@@ -1,4 +1,3 @@
-// models/Blog.js
 const mongoose = require('mongoose');
 
 const blogSchema = new mongoose.Schema(
@@ -8,6 +7,14 @@ const blogSchema = new mongoose.Schema(
       required: [true, 'Blog title is required'],
       trim: true,
       minlength: [5, 'Title must be at least 5 characters long']
+    },
+    slug: {
+      type: String,
+      required: [true, 'Slug is required'],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/^[a-z0-9-_]+$/, 'Slug can only contain lowercase letters, numbers, hyphens, and underscores']
     },
     body: {
       type: String,
@@ -20,12 +27,12 @@ const blogSchema = new mongoose.Schema(
       trim: true
     },
     image: {
-      type: String, // URL or file path
+      type: String,
       default: '',
     }
   },
   {
-    timestamps: true // Adds createdAt and updatedAt automatically
+    timestamps: true
   }
 );
 
