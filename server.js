@@ -15,6 +15,10 @@ app.use(cors({
   credentials: true,  // if you need to send cookies/auth headers
 }));app.use(express.json());
 
+// Serve uploads folder statically so images are accessible
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 app.get('/', (req, res) => {
   res.send('Connected');
 });
