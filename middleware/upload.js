@@ -3,9 +3,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Uploads folder path (relative to project root)
 const uploadDir = path.join(__dirname, '..', 'uploads');
 
-// Optional: create uploads folder if not exists
+// Agar uploads folder nahi hai toh create kar do
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -35,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5 MB limit, optional
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit optional
 });
 
 module.exports = upload;
