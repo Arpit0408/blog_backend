@@ -10,8 +10,10 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,  // if you need to send cookies/auth headers
+}));app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Connected');
