@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
     const blogs = await Blog.find().sort({ createdAt: -1 });
     res.status(200).json(blogs);
   } catch (err) {
+      console.error('Error creating blog:', err);
     res.status(500).json({ message: 'Server error while fetching blogs.' });
   }
 });
