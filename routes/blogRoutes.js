@@ -33,6 +33,10 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/blogs
 // @desc    Create a new blog post (with optional image upload)
 router.post('/', upload.single('image'), async (req, res) => {
+  // 🐞 Debug logs
+  console.log('Received blog post:');
+  console.log('req.body:', req.body);
+  console.log('req.file:', req.file);
   const { title, slug, body, author } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : '';
 
