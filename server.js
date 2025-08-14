@@ -12,7 +12,7 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: 'https://indus-orcin.vercel.app/',
+  origin: 'https://indus-orcin.vercel.app',
   credentials: true,  // if you need to send cookies/auth headers
 }));app.use(express.json());
 
