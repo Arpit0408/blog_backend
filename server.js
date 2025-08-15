@@ -4,8 +4,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const blogRoutes = require('./routes/blogRoutes');
+<<<<<<< HEAD
 const mailRoutes = require('./routes/mailRoutes.js');
 
+=======
+>>>>>>> 84422f55f3c643ecd60deb584d52ea94760a3df6
 const path = require('path'); // ✅ this is the missing line
 
 dotenv.config();
@@ -28,9 +31,12 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/blogs', blogRoutes);
 
+<<<<<<< HEAD
 app.use('/api/mail', mailRoutes);
 
 
+=======
+>>>>>>> 84422f55f3c643ecd60deb584d52ea94760a3df6
 // Connect to MongoDB and start server
 mongoose
   .connect(process.env.MONGO_URI)
